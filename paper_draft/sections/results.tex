@@ -1,0 +1,46 @@
+\section{Results}
+\label{sec:results}
+
+Our systematic analysis of \qwen reveals several key findings concerning the compositionality of linear directions across diverse contexts.
+
+{\bf Is there a consistency paradox in linear representation?} 
+The primary finding of our study is that the linearity of concepts is not necessarily a function of their semantic "relatedness." Instead, we observe that directions for \textbf{unrelated} concepts are significantly more consistent across contexts than those for related concepts. As shown in \Tabref{tab:consistency_results}, the average cosine similarity for unrelated concept directions in the final layer is 0.873, compared to 0.818 for related concepts.
+
+\begin{table}[t]
+    \centering
+    \caption{Average Cosine Similarity of Concept Directions across Layers. Unrelated concepts show higher consistency in the final layer, while early and middle layers exhibit nearly identical consistency for both groups.}
+    \label{tab:consistency_results}
+    \begin{tabular}{@{}llccc@{}}
+        \toprule
+        \textbf{Layer} & \textbf{\related (Mean Cosine)} & \textbf{\unrelated (Mean Cosine)} & \textbf{Difference} \\
+        \midrule
+        5 & 0.999995 & 0.999996 & -0.000001 \\
+        10 & 0.999995 & 0.999994 & \phantom{-}0.000001 \\
+        15 & 0.999994 & 0.999993 & \phantom{-}0.000001 \\
+        20 & 0.999991 & 0.999988 & \phantom{-}0.000003 \\
+        Final (-1) & 0.817634 & \textbf{0.872695} & \increase {\bf 0.055061} \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+This \consistencyparadox suggests that while the \lrh holds broadly as a default for novel or unrelated concept combinations, the model learns more complex, non-linear interactions for frequently co-occurring concepts. For example, "red apple" is represented as a specialized, "fused" feature rather than a simple sum of the "red" and "apple" directions. This feature "compilation" leads to a decrease in linear consistency for related pairs.
+
+{\bf Does steering generalization support the consistency findings?}
+The results of our steering interventions further support this paradox. As seen in \Tabref{tab:steering_results}, steering a "Truck" with a "Color" direction extracted from an unrelated domain ("Unrelated") is statistically comparable to, and in some cases more effective than, steering with a direction extracted from a related domain ("Related"). For the "Truck Color" task, unrelated steering achieved a logit jump of 0.0898, outperforming related steering at 0.0864. This indicates that the "default" linear directions for concepts like color are highly robust and transferable across semantic domains, even when those domains are unrelated to the source of the direction extraction.
+
+\begin{table}[t]
+    \centering
+    \caption{Steering Intervention Logit Jumps for Related vs. Unrelated Directions. Best results in \textbf{bold}.}
+    \label{tab:steering_results}
+    \begin{tabular}{@{}llcc@{}}
+        \toprule
+        \textbf{Task Name} & \textbf{Target Token} & \textbf{\related (Logit Jump)} & \textbf{\unrelated (Logit Jump)} \\
+        \midrule
+        Truck Color & "red" & 0.08636 & \textbf{0.08978} \\
+        Fact Truth & "True" & \textbf{0.00027} & 0.00026 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+{\bf How does concept interference evolve across layers?}
+Finally, our analysis of orthogonality across layers confirms that concept interference is highly layer-dependent. In the middle layers (Layers 10-20), we observed significant interference between different semantic domains, with cosine similarities occasionally reaching as low as -0.97, indicating nearly perfect opposition. However, by the final layer, directions across different domains become nearly orthogonal ($\sim$0.15), supporting the findings of \citet{azizian2025geometries} and suggesting that the model resolves feature interference by projecting into nearly orthogonal subspaces in the final stages of processing.

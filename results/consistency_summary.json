@@ -1,0 +1,20 @@
+[
+  {
+    "layer": "15",
+    "related_consistency": 0.5871906593030843,
+    "unrelated_consistency": 0.7017775946904835,
+    "gap": -0.11458693538739917
+  },
+  {
+    "layer": "20",
+    "related_consistency": 0.5528462291338238,
+    "unrelated_consistency": 0.6402059212989623,
+    "gap": -0.0873596921651385
+  },
+  {
+    "layer": "-1",
+    "related_consistency": 0.5815247736833603,
+    "unrelated_consistency": 0.6162351125031985,
+    "gap": -0.034710338819838205
+  }
+]

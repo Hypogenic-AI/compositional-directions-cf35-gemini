@@ -1,0 +1,8 @@
+\section{Conclusion}
+\label{sec:conclusion}
+
+In this study, we systematically investigated the compositionality of linear concept directions in \qwen. Our key finding is the \textbf{\consistencyparadox}: contrary to initial hypotheses, we found that linear directions for \textbf{unrelated} or novel concept combinations are significantly more consistent across contexts than those for common \textbf{related} concepts. Specifically, we observed an average cosine similarity of 0.873 for unrelated concepts compared to 0.818 for related concepts in the final layer.
+
+Our results suggest that LLMs utilize linear superposition as a "default" mechanism for novel concept combinations, but "compile" common related concepts into more efficient non-linear features. This finding challenges the assumption that linearity is the universal ideal for concept representation and provides a new perspective on how models balance generalizability with efficiency. We also demonstrated that steering interventions using unrelated directions are highly effective, even outperforming related steering in certain tasks. Finally, we traced the evolution of concept orthogonality across layers, confirming that features move towards nearly perfect orthogonality in the model's final stages.
+
+Future research into non-linear feature interactions and the scaling behavior of this "compilation" process will be essential for further refining our understanding of how LLMs encode and manipulate high-level concepts.

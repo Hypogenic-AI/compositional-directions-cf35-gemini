@@ -1,0 +1,26 @@
+\section{Methodology}
+\label{sec:methodology}
+
+Our investigation into the compositionality of linear directions uses \qwen \cite{qwen25}. We focus on the residual stream activations and evaluate the model's internal representation through three complementary experimental lenses: consistency analysis, steering intervention, and orthogonality evolution.
+
+\para{Direction Extraction.} We define a concept direction $\gamma$ as the mean difference between the residual stream activations of counterfactual prompt pairs. For example, the direction for "red" is extracted by comparing prompts such as "The fruit is an apple. The color is [red/blue]." We carefully design these prompts to minimize positional noise and ensure that the only variation is the target concept.
+
+\para{Consistency Analysis.} We measure the consistency of a concept direction $\gamma$ when applied to different base objects. We define two groups:
+\begin{itemize}[leftmargin=*,itemsep=0pt,topsep=0pt]
+    \item \textbf{\related (In-Group):} Concept-object pairs that are frequently co-occurring or semantically similar (e.g., "red" + "apple").
+    \item \textbf{\unrelated (Out-Group):} Concept-object pairs that are novel or semantically distant (e.g., "red" + "truck", "truth" + "prime number").
+\end{itemize}
+We compute the cosine similarity between the direction $\gamma_{1,A}$ (extracted from object A) and $\gamma_{1,B}$ (extracted from object B). High cosine similarity indicates that the concept direction is consistent across different contexts, supporting the \lrh.
+
+\para{Steering Intervention.} To test the causal influence of these directions, we perform vector steering. We extract a concept direction $\gamma$ from one domain (e.g., "red" from apples) and add it to an unrelated domain (e.g., "car"). Given an embedding $\lambda_{\text{car}}$, the intervened embedding is $\lambda' = \lambda_{\text{car}} + \alpha \gamma$, where $\alpha$ is a scaling factor. We measure the resulting jump in the logit of the target token (e.g., "red"). Statistical significance is assessed using a t-test comparing the logit jumps of related vs. unrelated steering interventions.
+
+\para{Orthogonality \& Subspace Analysis.} We analyze the cosine similarity between directions from different semantic clusters (e.g., Royalty vs. Family) and across tasks (e.g., Animal Truth vs. City Truth). This allows us to trace how concept interference evolves through the model's layers. Following \citet{park2023linear}, we also examine the \cip to measure the interference between these directions.
+
+\para{Datasets.} We use a combination of manually constructed pairs and established benchmarks:
+\begin{itemize}[leftmargin=*,itemsep=0pt,topsep=0pt]
+    \item \textbf{Concept Pairs:} Colors (red, blue, green) and Objects (car, apple, truck).
+    \item \textbf{Abstract Concepts:} "Truth", "Democracy", "Prime Number".
+    \item \textbf{Fact Datasets:} Facts about animals and cities from \triviaqa.
+    \item \textbf{Hierarchical Pairs:} Royalty (king/queen) vs. Family (father/mother).
+\end{itemize}
+We extract activations from all 28 layers of \qwen, focusing on the late-middle and final layers where concept representation is hypothesized to be most stable.

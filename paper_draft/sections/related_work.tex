@@ -1,0 +1,12 @@
+\section{Related Work}
+\label{sec:related_work}
+
+The investigation into the linear representation of high-level concepts in LLMs has progressed from identifying simple binary directions to understanding the complexities of their composition.
+
+\para{Foundations of \lrh.} The \lrh was formally defined by \citet{park2023linear} through three interconnected lenses: subspace, measurement (probing), and intervention (steering). They introduced the \cip, a metric that unifies embedding and unembedding spaces, showing that "causally separable" concepts are represented as orthogonal directions under this inner product. While they established the existence of these directions for isolated concepts, they did not systematically explore their compositionality across semantic and logical domains.
+
+\para{Task-Specific Orthogonality.} \citet{azizian2025geometries} showed that "truthfulness" is not a universal direction but is task-specific and largely orthogonal across different datasets (e.g., \triviaqa vs. BioASQ). This finding challenges the idea of a global "truth" vector and suggests that semantic directions may not compose globally, but are instead context-dependent clusters. Our work builds on this by comparing the consistency of these directions when applied to related vs. unrelated base objects.
+
+\para{Compositional Geometry and Primitives.} In contrast to semantic concepts, \citet{lippl2025algorithmic} identified "algorithmic primitives" (e.g., retrieving the nearest neighbor) as linear primitive vectors that \textit{are} compositional. They showed that these directions can be combined via vector arithmetic to steer complex reasoning tasks. Our research complements this by examining why semantic concepts seem less compositional than structural ones, and identifying the conditions under which semantic compositionality holds.
+
+\para{Limitations of Linear Probes and Feature Interaction.} \citet{pacela2026stop} argued that under superposition, the decision boundary of linear probes becomes non-linear, causing them to fail at generalizing to novel combinations of latent factors. This suggests that linear accessibility does not always equate to linear compositionality. Furthermore, \citet{koromilas2026polysae} introduced \polysae to capture non-linear feature interactions that standard linear SAEs miss. Our work provides empirical evidence for these theoretical limitations, showing that common concept combinations are indeed "compiled" into non-linear representations, leading to our observed \consistencyparadox.

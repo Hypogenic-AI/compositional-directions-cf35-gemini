@@ -1,0 +1,458 @@
+You are an academic paper writer. Generate a complete NEURIPS style paper
+based on the experiment results provided.
+
+════════════════════════════════════════════════════════════════════════════════
+                         IMPORTANT: BEFORE YOU START
+════════════════════════════════════════════════════════════════════════════════
+
+Before writing any content, you MUST complete these steps:
+
+1. READ THE SKILL: Review the paper-writer skill at .gemini/skills/paper-writer/SKILL.md
+2. READ THE STYLE GUIDE: Study templates/paper_writing/lab_style_guide.md carefully
+3. REVIEW EXAMPLES: Browse paper_examples/ for formatting and language patterns:
+   - Look at sections/1.introduction.tex for language style
+   - Look at tables/*.tex for table formatting
+   - Look at commands/*.tex for macro usage
+4. VERIFY COMMAND TEMPLATES: Command templates (math.tex, general.tex, macros.tex) are pre-copied to paper_draft/commands/
+
+CRITICAL: Reference example papers for FORMATTING and LANGUAGE STYLE only.
+Do NOT copy content, phrasing, or narrative structure from the example papers.
+The examples are in a different research domain - focus only on presentation style.
+
+════════════════════════════════════════════════════════════════════════════════
+                            EXPERIMENT REPORT
+════════════════════════════════════════════════════════════════════════════════
+
+# Research Report: Which linear directions are compositional?
+
+## 1. Executive Summary
+This research investigated the compositionality of linear directions in the residual stream of Transformer LLMs (Qwen-2.5-1.5B). Our key finding is that **linearity is the default representation mode for unrelated or novel concept combinations**, while **naturally occurring related concepts exhibit non-linear &#34;merging.&#34;** Contrary to the initial hypothesis, we found that unrelated concept directions are *more* consistent across contexts than related ones, suggesting that the model relies on linear superposition for novel compositions but develops specialized non-linear features for common compositions.
+
+## 2. Goal
+The research aimed to test the **Linear Representation Hypothesis (LRH)** under composition. We hypothesized that only related vectors compose naturally, while unrelated ones would appear non-linear or incoherent.
+
+## 3. Data Construction
+We used several datasets:
+- **Concept Pairs:** Manual pairs for colors (red, blue, green) and objects (car, apple, truck).
+- **Abstract Concepts:** Truth, Democracy, Prime Number.
+- **Truth Datasets:** Facts about animals and cities.
+- **Gender/Hierarchy Pairs:** Royalty (king/queen) vs. Family (father/mother).
+
+We extracted activations from the residual stream of **Qwen-2.5-1.5B** using controlled prompts to minimize positional noise.
+
+## 4. Experiment Description
+
+### Experiment 1: Consistency Analysis
+We measured the consistency of a concept direction $\gamma$ (e.g., &#34;red&#34;) when applied to different base objects (e.g., &#34;car&#34; vs. &#34;apple&#34;). We compared **In-Group Consistency** (Related) vs. **Out-Group Consistency** (Unrelated).
+
+### Experiment 2: Steering Intervention
+We performed vector steering by extracting a direction from one domain (e.g., &#34;red&#34; from apples) and adding it to an unrelated domain (e.g., &#34;car&#34;) to measure the logit jump of the target token.
+
+### Experiment 3: Orthogonality &amp; Subspace Analysis
+We analyzed the cosine similarity between directions from different semantic clusters (Royalty vs. Family) and across tasks (Animal Truth vs. City Truth).
+
+## 5. Result Analysis
+
+### Key Findings
+1.  **Consistency Paradox:** Directions for **unrelated concepts** (e.g., &#34;truth&#34;, &#34;democracy&#34;) were **more stable** across contexts (Avg Cosine Similarity ~0.65) than directions for **related concepts** (e.g., &#34;red&#34;, &#34;blue&#34;) (Avg Cosine Similarity ~0.58).
+2.  **Steering Generalization:** Steering a &#34;Truck&#34; with a &#34;Truth&#34; direction (unrelated) was statistically comparable to, and in some cases more effective than, steering with a &#34;Color&#34; direction (related). 
+3.  **Orthogonality Evolution:** In middle layers (e.g., Layer 10-20), directions for different domains showed significant interference (sometimes even being perfectly opposite, -0.97 cos sim). In the final layer, directions became nearly orthogonal (~0.15 cos sim), supporting the **Task-Specific Orthogonality** found in Azizian et al. (2025).
+
+### Visualizations
+*(Note: Visualizations were generated in `results/compositionality_plot.png` and `results/analysis_summary.json`)*
+- Cosine similarity between $(v_1 + v_2)$ and $v(1+2)$ was high in early layers but dropped in the last layer for related concepts.
+
+### Interpretation
+The results suggest that the LLM uses **linear superposition as a general-purpose composition mechanism for novel or unrelated concepts**. However, for **common related concepts**, the model learns **non-linear interactions** (features) that represent the joint concept more efficiently than a simple linear sum. This &#34;compilation&#34; of common concepts leads to the observed *lower* linear consistency for related pairs.
+
+## 6. Conclusions
+The Linear Representation Hypothesis is a robust **default** for LLMs. Linearity is most prevalent when the model handles concepts it hasn&#39;t explicitly &#34;fused&#34; during training. Compositionality &#34;fails&#34; linearly for related concepts precisely because the model has moved beyond simple addition to represent their complex interactions.
+
+## 7. Next Steps
+1. **SAE Probing:** Use Sparse Autoencoders to see if &#34;red car&#34; is represented by a single &#34;fused&#34; feature vs. two active &#34;red&#34; and &#34;car&#34; features.
+2. **Scaling:** Test if larger models (70B+) show more or less non-linear fusion for related concepts.
+3. **Causal Intervention:** Use the Causal Inner Product to explicitly measure the &#34;interference&#34; penalty when composing directions.
+
+---
+*Research conducted by Gemini CLI Research Agent, April 2026.*
+
+
+════════════════════════════════════════════════════════════════════════════════
+                            RESEARCH PLAN
+════════════════════════════════════════════════════════════════════════════════
+
+# Research Plan: Which linear directions are compositional?
+
+## Research Question
+Does the linear representation hypothesis (LRH) hold across all concept combinations, or is compositionality limited to &#34;related&#34; directions within coherent subspaces?
+
+## Motivation &amp; Novelty Assessment
+
+### Why This Research Matters
+Understanding the compositionality of linear representations is crucial for:
+1. **Model Steerability:** If we can&#39;t reliably compose directions, our ability to steer LLMs using vector arithmetic (e.g., adding &#34;truthfulness&#34; + &#34;politeness&#34;) is limited and potentially dangerous.
+2. **Mechanistic Interpretability:** It challenges the simplified view that LLMs are just &#34;linear algebra over concept vectors.&#34;
+3. **Safety:** Predicting when concept combinations might lead to non-linear &#34;jumps&#34; or failure of representation.
+
+### Gap in Existing Work
+Existing work like Park et al. (2023) establishes the existence of linear directions for isolated concepts. Azizian et al. (2025) suggests task-specific orthogonality. However, no systematic study has compared the **compositional properties** of related vs. unrelated directions across semantic and logical domains. 2026 work like PolySAE suggests non-linearity but hasn&#39;t mapped the boundary of where composition works vs. fails.
+
+### Our Novel Contribution
+We will systematically test the **Additivity Constraint** for linear directions across:
+1. **Semantic (Property-Object):** e.g., &#34;Red&#34; + &#34;Car&#34;
+2. **Logical (Negation):** e.g., &#34;Paris&#34; + &#34;not&#34;
+3. **Hierarchical (Taxonomy):** e.g., &#34;Animal&#34; + &#34;Mammal&#34;
+4. **Unrelated (Random):** e.g., &#34;Red&#34; + &#34;Prime Number&#34;
+
+We aim to show that &#34;relatedness&#34; (proximity in a hierarchy or shared property subspace) is a predictor of compositionality.
+
+### Experiment Justification
+- **Experiment 1 (Semantic Composition):** Tests if property directions compose with object directions. Measures cosine similarity between $v(P) + v(O)$ and $v(PO)$.
+- **Experiment 2 (Logical Negation):** Tests if the &#34;Negation&#34; operator acts as a linear transformation (vector addition/subtraction) across tasks.
+- **Experiment 3 (Causal Inner Product / Interference):** Uses Park 2023&#39;s metric to quantify interference between directions. Hypothesis: Related directions have lower interference.
+
+## Hypothesis Decomposition
+1. **Sub-hypothesis A:** Directions for related concepts (e.g., from the same domain like &#34;animal&#34;) share a coherent subspace and compose linearly.
+2. **Sub-hypothesis B:** Combining directions from unrelated domains (e.g., &#34;math&#34; and &#34;geography&#34;) results in high interference and failure of the linear approximation.
+3. **Sub-hypothesis C:** Negation is a consistent linear direction only within related semantic clusters.
+
+## Proposed Methodology
+
+### Approach
+We will use Llama-3-8B-hf. We will extract activations from the residual stream. We will define concept directions as the mean difference between counterfactual pairs.
+
+### Experimental Steps
+1. **Direction Extraction:**
+   - Gather counterfactual pairs for:
+     - Color (Red vs Blue)
+     - Object (Car vs Truck)
+     - Truth (True vs False statements in Animals, Cities)
+     - Negation (Positive vs Negative sentences)
+2. **Additivity Test:**
+   - Compute $\gamma_{red}$, $\gamma_{car}$, $\gamma_{red\_car}$.
+   - Measure $d = \cos(\gamma_{red} + \gamma_{car}, \gamma_{red\_car})$.
+   - Repeat for unrelated pairs (e.g., $\gamma_{red} + \gamma_{prime\_number}$).
+3. **Intervention Test:**
+   - Take an embedding $\lambda_{blue\_car}$.
+   - Intervene: $\lambda&#39; = \lambda_{blue\_car} - \gamma_{blue} + \gamma_{red}$.
+   - Measure if $\lambda&#39;$ yields logits for &#34;red car&#34;.
+4. **Subspace Coherence (LOO):**
+   - Use Leave-One-Out to check if directions are consistent.
+
+### Baselines
+- **Random Direction Baseline:** Add random vectors of same norm.
+- **Single Direction Baseline:** Use only one direction without composition.
+- **Park 2023 Subspace Projection:** Project onto the concept subspace.
+
+### Evaluation Metrics
+- **Cosine Similarity:** Between additive prediction and actual composed activation.
+- **Logit Difference:** Measure change in model output after steering.
+- **Causal Inner Product:** Measure orthogonality of directions.
+
+### Statistical Analysis Plan
+- T-test to compare cosine similarities of Related vs Unrelated pairs.
+- Correlation between Hierarchy Distance (WordNet) and Compositionality Metric.
+
+## Expected Outcomes
+Related pairs (high semantic overlap or hierarchy proximity) will show significantly higher cosine similarity and steering success than unrelated pairs.
+
+## Timeline and Milestones
+- **Setup:** 0.5h
+- **Data Prep &amp; Direction Extraction:** 1.5h
+- **Experiments 1 &amp; 2:** 2h
+- **Analysis &amp; Visualization:** 1.5h
+- **Documentation:** 1h
+
+## Success Criteria
+Empirical evidence showing a clear gap in compositionality between related and unrelated linear directions in Llama-3.
+
+
+════════════════════════════════════════════════════════════════════════════════
+                          LITERATURE REVIEW
+════════════════════════════════════════════════════════════════════════════════
+
+# Literature Review: Compositionality of Linear Directions in LLMs
+
+## Research Area Overview
+The **Linear Representation Hypothesis (LRH)** posits that high-level concepts are represented as linear directions in the residual stream of Transformer-based Large Language Models (LLMs). While foundational work has successfully identified directions for binary concepts (e.g., gender, truth), recent research (2024-2026) has begun to uncover the limitations of this hypothesis, particularly concerning **compositionality**—the ability to combine these directions to represent complex or novel concepts.
+
+## Key Papers
+
+### 1. The Linear Representation Hypothesis and the Geometry of Large Language Models (Park et al., 2023)
+- **Contribution:** Formally defines the LRH through three lenses: subspace, measurement (probing), and intervention (steering).
+- **Methodology:** Introduces the **Causal Inner Product**, a non-Euclidean metric that respects language structure and unifies embedding and unembedding spaces.
+- **Relevance:** Establishes that &#34;causally separable&#34; concepts (those that can be varied independently) are represented as orthogonal directions under this inner product.
+
+### 2. The Geometries of Truth Are Orthogonal Across Tasks (Azizian et al., 2025)
+- **Contribution:** Demonstrates that &#34;truthfulness&#34; is not a universal direction but is **task-specific** and largely **orthogonal** across different datasets.
+- **Key Finding:** Linear probes trained on one task (e.g., TriviaQA) fail to generalize to others (e.g., BioASQ), even if both represent factual truth.
+- **Relevance:** Suggests that &#34;truth&#34; directions do not compose globally; they are context-dependent clusters.
+
+### 3. Algorithmic Primitives and Compositional Geometry of Reasoning (Lippl et al., 2025)
+- **Contribution:** Identifies **Algorithmic Primitives** (e.g., &#34;retrieving nearest neighbor&#34;) as linear &#34;primitive vectors.&#34;
+- **Key Finding:** Unlike semantic concepts (like truth), these algorithmic directions **are compositional** and can be combined via vector addition/subtraction to steer complex reasoning tasks.
+- **Relevance:** Provides a counterpoint to Azizian, suggesting that structural/procedural directions may be more compositional than semantic ones.
+
+### 4. Stop Probing, Start Coding: Why Linear Probes and SAEs Fail at Compositional Generalisation (Pacela et al., 2026)
+- **Contribution:** Distinguishes between linear **encoding** (concepts as directions) and linear **accessibility** (recoverability via linear probes).
+- **Key Finding:** Under **superposition** (more concepts than dimensions), the decision boundary becomes non-linear. Linear probes fail to generalize to novel combinations of latent factors (compositional shifts).
+- **Relevance:** Directly supports the hypothesis that linear directions only appear linear in limited contexts and fail during composition.
+
+### 5. PolySAE: Modeling Feature Interactions via Polynomial Decoding (Koromilas et al., 2026)
+- **Contribution:** Extends Sparse Autoencoders (SAEs) with **polynomial terms** (quadratic/cubic) to capture multiplicative feature interactions.
+- **Key Finding:** Standard linear SAEs cannot distinguish between additive co-occurrence and **multiplicative composition** (e.g., &#34;star&#34; + &#34;coffee&#34; = &#34;Starbucks&#34;).
+- **Relevance:** Confirms that semantic composition is inherently non-linear and requires higher-order interactions.
+
+## Synthesis of Findings
+The literature suggests a hierarchy of compositionality:
+1. **Structural/Algorithmic Primitives:** Highly compositional and transferable (Lippl 2025).
+2. **Related Semantic Concepts (Additive):** Approximately linear and composable when the linear approximation holds (Park 2023).
+3. **Task-Dependent Semantic Concepts:** Context-specific and orthogonal (Azizian 2025).
+4. **Complex/Phonetic Compositions:** Inherently non-linear; linear models fail to generalize (Pacela 2026, Koromilas 2026).
+
+## Recommendations for Experiment Design
+- **Datasets:** Use `Park 2023` word pairs for related concepts (additive baseline) and `Azizian 2025` truth datasets for task-specific/orthogonal tests.
+- **Evaluation:** Compare linear probes (measurement) vs. vector addition (intervention) across in-distribution and compositional shift settings.
+- **Methods:** Test if adding vectors for related concepts (e.g., &#34;red&#34; + &#34;blue&#34;) preserves linearity better than unrelated concepts.
+- **Higher-order Analysis:** Use the `tuned-lens` to trace how composition evolves layer-by-layer and check for non-linear &#34;jumps&#34; using `PolySAE`-style analysis.
+
+
+════════════════════════════════════════════════════════════════════════════════
+                          PAPER REQUIREMENTS
+════════════════════════════════════════════════════════════════════════════════
+
+Generate a complete academic paper with the following structure:
+
+1. TITLE
+   - Clear, specific, informative
+   - Should convey main finding or contribution
+
+2. AUTHOR
+   - Use this exact author line in the \author{} block: Ari Holtzman and NeuriCo
+
+3. ABSTRACT (150-250 words)
+   - Problem statement
+   - Approach
+   - Key results
+   - Significance
+
+4. INTRODUCTION
+   - Research problem and motivation
+   - Gap in existing work
+   - Our contribution (be specific)
+   - Paper organization
+
+5. RELATED WORK
+   - Organized by theme/approach
+   - Position our work relative to prior work
+   - Cite papers from literature review
+
+6. METHODOLOGY
+   - Clear description of approach
+   - Experimental setup
+   - Datasets used
+   - Evaluation metrics
+   - Baselines
+
+7. RESULTS
+   - Present results with tables and figures
+   - Statistical analysis
+   - Comparison to baselines
+   - Ablation studies (if applicable)
+
+8. DISCUSSION
+   - Interpretation of results
+   - Limitations
+   - Broader implications
+
+9. CONCLUSION
+   - Summary of contributions
+   - Key findings
+   - Future work
+
+10. REFERENCES
+   - BibTeX format
+   - All cited papers
+
+════════════════════════════════════════════════════════════════════════════════
+                          OUTPUT FORMAT
+════════════════════════════════════════════════════════════════════════════════
+
+Create a MODULAR LaTeX project with the following directory structure:
+
+paper_draft/
+├── main.tex              # Main file that imports all sections
+├── references.bib        # BibTeX references
+├── sections/
+│   ├── abstract.tex      # Abstract content
+│   ├── introduction.tex  # Introduction section
+│   ├── related_work.tex  # Related work section
+│   ├── methodology.tex   # Methodology section
+│   ├── results.tex       # Results section
+│   ├── discussion.tex    # Discussion section
+│   └── conclusion.tex    # Conclusion section
+├── figures/              # Directory for any generated figures
+├── tables/               # Directory for complex standalone tables
+└── appendix/             # Directory for appendix sections (if needed)
+
+INSTRUCTIONS:
+1. First, create the directory structure above (mkdir -p paper_draft/sections paper_draft/figures paper_draft/tables paper_draft/appendix)
+2. Write main.tex using the EXACT preamble for NEURIPS:
+
+   \documentclass{article}
+   \usepackage[final]{neurips_2025}  % NEURIPS style (neurips_2025.sty is in paper_draft/)
+   \usepackage[hidelinks]{hyperref}  % REQUIRED: clickable links
+   \usepackage{booktabs}  % REQUIRED: professional tables
+   \usepackage{graphicx}
+   \usepackage{amsmath,amssymb}
+
+   % Import command files
+   \input{commands/math}
+   \input{commands/general}
+   \input{commands/macros}
+
+   % Use this bibliography style:
+   \bibliographystyle{plainnat}
+
+   \author{Ari Holtzman and NeuriCo}
+
+   - Use \input{sections/...} to include each section
+   - Use \bibliography{references} for references
+3. Write each section file with COMPLETE content (no placeholders)
+4. Each section file should include its \section{} command
+5. Write references.bib with all citations in BibTeX format
+6. After writing all files, compile the paper:
+   cd paper_draft && pdflatex -interaction=nonstopmode main.tex && bibtex main && pdflatex -interaction=nonstopmode main.tex && pdflatex -interaction=nonstopmode main.tex
+
+This modular structure allows humans to easily:
+- Edit individual sections without navigating a large file
+- Track changes per section
+- Reuse sections across different paper versions
+
+════════════════════════════════════════════════════════════════════════════════
+                          QUALITY REQUIREMENTS
+════════════════════════════════════════════════════════════════════════════════
+
+- Academic tone throughout
+- All claims must be supported by data from the experiment report
+- Proper citations using \cite{} commands
+- Clear figures and tables with proper captions
+- NO placeholder text - every section must have real content
+- The paper MUST compile without errors
+- If compilation fails, debug and fix the LaTeX errors
+
+════════════════════════════════════════════════════════════════════════════════
+                          LAB WRITING STYLE
+════════════════════════════════════════════════════════════════════════════════
+
+Follow these lab-specific conventions to match our paper style:
+
+1. LANGUAGE STYLE:
+   - Use active voice: "We propose", "We examine", "We focus on"
+   - Be direct and confident: "Our main question is...", "We hypothesize that..."
+   - State things clearly and simply - prefer plain language over jargon
+   - Use bold questions as paragraph organizers: {\bf what is X?}
+   - Include specific quantitative claims: "8.97% over baseline"
+   - Avoid fancy wording: "utilize" → "use", "facilitate" → "help"
+
+2. INTRODUCTION STRUCTURE:
+   - Engaging hook (get to the point quickly)
+   - Problem importance
+   - Gap identification
+   - Your approach with method figure reference
+   - Quantitative preview of results
+   - Contribution bullets (3-4 items, action verbs)
+
+3. CONTRIBUTION LISTS:
+   \begin{itemize}[leftmargin=*,itemsep=0pt,topsep=0pt]
+       \item We propose...
+       \item We conduct...
+       \item We complement...
+   \end{itemize}
+
+4. MODULAR COMMANDS STRUCTURE:
+   Command templates are pre-copied to paper_draft/commands/:
+   - math.tex: Math notation macros
+   - general.tex: Formatting macros
+   - macros.tex: Project-specific term definitions (customize this for your paper)
+
+   In main.tex, include:
+   \input{commands/math}
+   \input{commands/general}
+   \input{commands/macros}
+
+5. REFERENCE CONVENTIONS:
+   Use reference macros from math.tex:
+   - \figref{fig:name} for "figure 1" (lowercase, in-sentence)
+   - \Figref{fig:name} for "Figure 1" (capitalized, start of sentence)
+   - \secref{sec:name} for "section 2"
+
+6. TEXT FORMATTING:
+   - Use \para{Header text} for bold paragraph headers
+   - Define method/dataset names with \textsc and \xspace:
+     \newcommand{\methodname}{\textsc{MethodName}\xspace}
+
+7. TABLE FORMATTING:
+   - Use booktabs package (no vertical lines)
+   - Use \resizebox{\textwidth}{!}{...} for wide tables
+   - Use @{} to remove padding at table edges
+   - Use \cmidrule(lr){x-y} for sub-headers
+   - Use \textsc{} for dataset/method names in headers
+   - Bold best results with {\bf ...}
+
+8. FIGURE FORMATTING:
+   - Use 0.32\textwidth for 3-column subfigures
+   - Use 0.95\linewidth for full-width figures
+   - Use \input{figures/legend} for shared legends
+   - Write self-contained captions explaining key observations
+
+9. RESULTS PRESENTATION:
+   - Define \increase and \decrease for colored arrows (green up, red down)
+   - Bold best results in tables
+   - Report confidence intervals when available
+
+10. ALGORITHM STYLING:
+    - Use algpseudocode with [noend]
+    - Use \triangleright for comments
+
+11. HYPERLINKS (REQUIRED):
+    - Always use \usepackage[hidelinks]{hyperref} or with colored links
+    - All citations, section refs, figure refs, table refs must be clickable
+    - This is essential for reader navigation
+
+════════════════════════════════════════════════════════════════════════════════
+                          WORKFLOW: REVIEW AND REFLECT
+════════════════════════════════════════════════════════════════════════════════
+
+Before calling finish, you MUST complete these review steps:
+
+1. REVIEW RESOURCES (at the start):
+   - Read .gemini/skills/paper-writer/SKILL.md for detailed guidance
+   - Study templates/paper_writing/lab_style_guide.md for style conventions
+   - Browse paper_examples/ for formatting and language patterns
+
+2. SELF-REFLECTION (before finishing):
+   After writing all sections, review your work against these criteria:
+
+   LANGUAGE CHECK:
+   - [ ] Is the writing clear and jargon-free?
+   - [ ] Are claims specific with quantitative support?
+   - [ ] Is active voice used throughout?
+
+   FORMATTING CHECK:
+   - [ ] Does main.tex include \input{commands/math}, \input{commands/general}, \input{commands/macros}?
+   - [ ] Is hyperref package included for clickable references?
+   - [ ] Do tables use booktabs (no vertical lines)?
+   - [ ] Are best results bolded in tables?
+   - [ ] Are figures/tables properly captioned?
+
+   STRUCTURE CHECK:
+   - [ ] Does introduction follow: hook → importance → gap → approach → preview → contributions?
+   - [ ] Are contribution bullets specific with action verbs?
+   - [ ] Does the paper compile without errors?
+
+3. FIX ISSUES:
+   - Address any issues found in the self-reflection
+   - Re-compile and verify the PDF looks correct
+
+Only after completing this review should you consider the paper finished.

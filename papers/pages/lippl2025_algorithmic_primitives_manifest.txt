@@ -1,0 +1,16 @@
+PDF: papers/lippl2025_algorithmic_primitives.pdf
+Total pages: 31
+Pages per chunk: 3
+
+Chunks:
+  lippl2025_algorithmic_primitives_chunk_001.pdf: pages 1-3
+  lippl2025_algorithmic_primitives_chunk_002.pdf: pages 4-6
+  lippl2025_algorithmic_primitives_chunk_003.pdf: pages 7-9
+  lippl2025_algorithmic_primitives_chunk_004.pdf: pages 10-12
+  lippl2025_algorithmic_primitives_chunk_005.pdf: pages 13-15
+  lippl2025_algorithmic_primitives_chunk_006.pdf: pages 16-18
+  lippl2025_algorithmic_primitives_chunk_007.pdf: pages 19-21
+  lippl2025_algorithmic_primitives_chunk_008.pdf: pages 22-24
+  lippl2025_algorithmic_primitives_chunk_009.pdf: pages 25-27
+  lippl2025_algorithmic_primitives_chunk_010.pdf: pages 28-30
+  lippl2025_algorithmic_primitives_chunk_011.pdf: page 31

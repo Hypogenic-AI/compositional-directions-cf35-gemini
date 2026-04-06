@@ -1,0 +1,23 @@
+[project]
+name = "research-workspace"
+version = "0.1.0"
+description = "Research workspace for experiments"
+requires-python = ">=3.10"
+dependencies = [
+    "torch",
+    "transformers",
+    "accelerate",
+    "scikit-learn",
+    "scipy",
+    "seaborn",
+    "tqdm",
+    "optimum-quanto",
+    "sentencepiece",
+    "datasets",
+    "pandas",
+    "matplotlib",
+    "huggingface-hub>=1.9.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = []

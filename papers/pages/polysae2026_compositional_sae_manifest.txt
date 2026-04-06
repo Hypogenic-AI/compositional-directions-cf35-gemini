@@ -1,0 +1,12 @@
+PDF: papers/polysae2026_compositional_sae.pdf
+Total pages: 19
+Pages per chunk: 3
+
+Chunks:
+  polysae2026_compositional_sae_chunk_001.pdf: pages 1-3
+  polysae2026_compositional_sae_chunk_002.pdf: pages 4-6
+  polysae2026_compositional_sae_chunk_003.pdf: pages 7-9
+  polysae2026_compositional_sae_chunk_004.pdf: pages 10-12
+  polysae2026_compositional_sae_chunk_005.pdf: pages 13-15
+  polysae2026_compositional_sae_chunk_006.pdf: pages 16-18
+  polysae2026_compositional_sae_chunk_007.pdf: page 19

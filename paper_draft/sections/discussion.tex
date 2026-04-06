@@ -1,0 +1,15 @@
+\section{Discussion}
+\label{sec:discussion}
+
+The \consistencyparadox uncovered in this study challenges the assumption that linear compositionality is the ideal for all concept representations. Our results suggest that while the Linear Representation Hypothesis (\lrh) provides a robust "default" mechanism for novel concept combinations, it may not be the optimal way to represent common or highly related concepts.
+
+{\bf Is linearity the default mechanism for novel concepts?} 
+Our finding that unrelated concepts (e.g., "red" + "truck") are represented more linearly than related ones (e.g., "red" + "apple") suggests that LLMs use linear superposition as a general-purpose mechanism for novel or rare compositions. This aligns with the idea of a "universal" conceptual space where concepts can be combined via vector arithmetic to represent novel ideas. In these cases, the model has not explicitly learned the non-linear interaction between the two concepts and instead relies on the simple addition of their individual directions.
+
+{\bf Does feature "compilation" explain the lack of consistency in related concepts?}
+Conversely, our results show that frequently co-occurring concepts exhibit a \textit{decrease} in linear consistency. This suggests that for these common combinations, the model has learned more efficient non-linear interactions---a process we term "feature compilation." In these cases, the joint concept (e.g., "red apple") is represented by a specialized non-linear manifold that captures the complex interaction between the color and the object more effectively than a simple sum. This compilation allows the model to compress information and possibly process these combinations more efficiently, but it comes at the cost of linear consistency.
+
+{\bf How does orthogonality evolve across layers?}
+Our observation that concept orthogonality increases in the final layer supports the findings of \citet{azizian2025geometries} and suggests a clear architectural division. Middle layers appear to be the site of significant feature interference and interaction, while the final layer serves to resolve these interactions and project concepts into nearly orthogonal, task-specific subspaces for final output generation.
+
+\para{Limitations and Future Work.} While our study provides strong empirical evidence for the \consistencyparadox, it is limited by its focus on a single model, \qwen. Future work should investigate whether larger models (e.g., 70B+ parameters) show more or less non-linear "compilation" for related concepts. Furthermore, the use of Sparse Autoencoders (SAEs) to explicitly identify "fused" features for common concept combinations would provide more granular evidence for the feature compilation hypothesis. Finally, exploring how the \cip evolves across layers could provide a deeper non-Euclidean understanding of concept interference.

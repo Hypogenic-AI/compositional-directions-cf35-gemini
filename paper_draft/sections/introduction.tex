@@ -1,0 +1,21 @@
+\section{Introduction}
+\label{sec:introduction}
+
+The Linear Representation Hypothesis (\lrh) has recently emerged as a foundational framework for understanding how Large Language Models (LLMs) encode and manipulate high-level concepts \cite{park2023linear}. By positing that semantic concepts like "truth," "gender," or "negation" are represented as linear directions in the model's residual stream, \lrh has enabled powerful techniques for model interpretability and steerability. However, real-world language use rarely involves isolated concepts; rather, it is characterized by the complex \textit{composition} of multiple semantic, logical, and structural elements.
+
+{\bf Why does compositionality in \lrh matter?} 
+The ability to reliably compose linear directions is crucial for both model safety and engineering. If we cannot reliably combine a "politeness" vector with a "truthfulness" vector to produce a polite and truthful response, our ability to control model behavior through vector arithmetic remains severely limited. Furthermore, understanding where linear composition fails can provide deep insights into the model's internal "reasoning" and whether it truly learns compositional rules or merely relies on a vast library of "pre-compiled" non-linear features.
+
+Despite the importance of this question, there remains a significant gap in our understanding of which linear directions are compositional. While some work suggests that algorithmic primitives are highly compositional \cite{lippl2025algorithmic}, others demonstrate that semantic concepts like "truth" are task-specific and largely orthogonal, suggesting a lack of global compositionality \cite{azizian2025geometries}. Most importantly, it is currently unknown whether semantic "relatedness"---the proximity of concepts within a hierarchy or shared property subspace---is a predictor of how well their linear directions will compose.
+
+In this work, we systematically investigate the compositionality of linear directions across diverse semantic and logical domains in \qwen. We hypothesize that related concepts, sharing a coherent subspace, will compose linearly, while unrelated ones will exhibit high interference. To test this, we define three core experiments: consistency analysis, steering intervention, and orthogonality evolution.
+
+Contrary to our initial expectations, our results reveal a \textbf{\consistencyparadox}. We find that directions for \textbf{unrelated} concept combinations (e.g., "Truth" applied to "Truck") are actually \textbf{more consistent} across contexts (Avg. Cosine Similarity $\sim$0.65) than directions for frequently co-occurring \textbf{related} concepts (e.g., "Red" applied to "Car") ($\sim$0.58). This suggests that the model uses linear superposition as its default mechanism for novel or rare compositions, but "compiles" common related concepts into more efficient, but less linearly consistent, non-linear features.
+
+Our main contributions are as follows:
+\begin{itemize}[leftmargin=*,itemsep=0pt,topsep=0pt]
+    \item We identify and characterize the \textbf{\consistencyparadox}, showing that linear compositionality is the default for novel concept combinations but fails for related ones.
+    \item We demonstrate that steering interventions using "out-group" (unrelated) directions are statistically comparable to, and in some cases more effective than, "in-group" (related) directions, with an average logit jump of 0.089 for unrelated color steering.
+    \item We trace the evolution of concept orthogonality across layers, confirming that directions move from high interference in middle layers to nearly perfect orthogonality ($\sim$0.15) in the final layer.
+    \item We provide evidence that the failure of linear compositionality in related concepts is a hallmark of feature "compilation" into non-linear manifolds.
+\end{itemize}
